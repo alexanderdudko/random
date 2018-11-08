@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Generator
+namespace Generator.RandomGenerator.Uniform
 {
-    public class PseudoRandomSource : IUniformDistributionGenerator
+    public class SystemUniformRandomSource : IUniformDistributionGenerator
     {
         private Random mRandom = new Random();
 

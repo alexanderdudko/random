@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Generator
+namespace Generator.Sequence
 {
     public interface ISequenceGenerator<T>
     {
-        IEnumerable<T> Generate();
+        IEnumerable<T> Generate(int count);
     }
 }

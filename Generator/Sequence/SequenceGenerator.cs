@@ -1,14 +1,23 @@
-﻿using System;
+﻿using Generator.RandomGenerator;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Generator.Sequence
 {
-    class SequenceGenerator<T> : ISequenceGenerator<T>
+    public class SequenceGenerator<T> : ISequenceGenerator<T>
     {
-        public IEnumerable<T> Generate()
+        private IRandomSource<T> mSource;
+
+        public SequenceGenerator(IRandomSource<T> source)
         {
-            throw new NotImplementedException();
+            mSource = source;
+        }
+
+        public IEnumerable<T> Generate(int count)
+        {
+            for (int i = 0; i < count; i++)
+                yield return mSource.Next();
         }
     }
 }
