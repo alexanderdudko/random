@@ -16,18 +16,26 @@ namespace GeneratorCLI
         static void Main(string[] args)
         {
             string basePath = @"H:\projects\data\random";
-            var directory = Directory.CreateDirectory(Path.Combine(basePath, DateTime.Now.ToString("yyyyMMdd-HHmmss")));
+            var path = Directory.CreateDirectory(Path.Combine(basePath, DateTime.Now.ToString("yyyyMMdd-HHmmss"))).FullName;
+            int fileSize = 1024 * 1024; // 1MB
+            int numberOfFiles = 16;
+
+            GenerateFiles(path, fileSize, numberOfFiles);
+        }
+
+        private static void GenerateFiles(string path, int fileSize, int numberOfFiles)
+        {
             int n = 256;
             var d = new GeometricProgressionDistribution<byte>(Enumerable.Range(0, n).Select(x => (byte)x), 1);
             double k = 1;
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < numberOfFiles; i++)
             {
                 double progression = Math.Pow(k, 1.0 / (n - 1));
                 d.SetProgressionRate(progression);
 
                 string filename = $"{i}.data";
-                Console.WriteLine($"Generating file {filename} with entropy {EntropyCalculator.CalculateForDistribution(d)}");
-                GenerateFile(d, Path.Combine(directory.FullName, filename), 1024 * 1024);
+                Console.WriteLine($"Generating file {filename}.");
+                GenerateFile(d, Path.Combine(path, filename), fileSize);
 
                 k *= 2;
             }
@@ -35,9 +43,21 @@ namespace GeneratorCLI
 
         private static void GenerateFile(IDiscreteValueDistribution<byte> distribution, string filename, int size)
         {
+            double generatorEntropy = EntropyCalculator.CalculateForDistribution(distribution);
+            Console.WriteLine($"  Generator entropy {generatorEntropy:N5}");
+
             var randomSource = new DiscreteFiniteSetValueGenerator<byte>(distribution, new SystemUniformRandomSource());
             var sg = new SequenceGenerator<byte>(randomSource);
-            byte[] bytes = sg.Generate(size).ToArray();
+            byte[] bytes;
+            double difference;
+            do
+            {
+                bytes = sg.Generate(size).ToArray();
+
+                double empiricalDataEntropy = EntropyCalculator.CalculateForData(bytes);
+                difference = Math.Abs(generatorEntropy - empiricalDataEntropy);
+                Console.WriteLine($"  Generated empirical data with entropy {empiricalDataEntropy:N5}. Difference: {difference:N5}.");
+            } while (difference > 0.001);
             File.WriteAllBytes(filename, bytes);
         }
 
