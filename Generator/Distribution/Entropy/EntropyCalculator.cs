@@ -11,5 +11,9 @@ namespace Generator.Distribution.Entropy
         {
             return -distribution.Values.Sum(x => distribution.ValueProbability(x) * Math.Log(distribution.ValueProbability(x), 2));
         }
+        public static double CalculateForData<T>(IEnumerable<T> data)
+        {
+            return CalculateForDistribution(new EmpiricalDataDistribution<T>(data));
+        }
     }
 }

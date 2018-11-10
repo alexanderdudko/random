@@ -5,33 +5,27 @@ using System.Text;
 
 namespace Generator.Distribution
 {
-    public class GeometricProgressionDistribution<T> : IDiscreteValueDistribution<T>
+    public class EmpiricalDataDistribution<T> : IDiscreteValueDistribution<T>
     {
-        private T[] mValues;
         private Dictionary<T, double> mProbabilities;
-        public IEnumerable<T> Values => mValues;
 
-        public GeometricProgressionDistribution(IEnumerable<T> values, double progressionRate)
+        public EmpiricalDataDistribution(IEnumerable<T> data)
         {
-            mValues = values.ToArray();
-            SetProgressionRate(progressionRate);
+            CalculateProbabilities(data);
         }
 
-        public void SetProgressionRate(double progressionRate)
+        public void CalculateProbabilities(IEnumerable<T> data)
         {
             mProbabilities = new Dictionary<T, double>();
-            double sum = 1;
-            double x = 1;
-            for (int i = 2; i <= mValues.Length; i++)
+            int count = 0;
+            foreach (var item in data)
             {
-                x /= progressionRate;
-                sum += x;
+                mProbabilities[item]++;
+                count++;
             }
-            double probability = 1.0 / sum;
-            foreach (var item in mValues)
+            foreach (var key in mProbabilities.Keys)
             {
-                mProbabilities[item] = probability;
-                probability /= progressionRate;
+                mProbabilities[key] /= count;
             }
             double totalProbability = mProbabilities.Values.Sum();
             if (totalProbability - 1 > 1e-10) throw new ArithmeticException($"Total probability must be equal to 1, but was {totalProbability}.");
