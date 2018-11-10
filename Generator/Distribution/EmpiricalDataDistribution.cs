@@ -14,6 +14,8 @@ namespace Generator.Distribution
             CalculateProbabilities(data);
         }
 
+        public IEnumerable<T> Values => mProbabilities.Keys;
+
         public void CalculateProbabilities(IEnumerable<T> data)
         {
             mProbabilities = new Dictionary<T, double>();
