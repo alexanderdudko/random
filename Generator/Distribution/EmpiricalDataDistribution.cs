@@ -11,26 +11,32 @@ namespace Generator.Distribution
 
         public EmpiricalDataDistribution(IEnumerable<T> data)
         {
-            CalculateProbabilities(data);
+            mProbabilities = CalculateProbabilities(data);
         }
 
         public IEnumerable<T> Values => mProbabilities.Keys;
 
-        public void CalculateProbabilities(IEnumerable<T> data)
+        public static Dictionary<T, double> CalculateProbabilities(IEnumerable<T> data)
         {
-            mProbabilities = new Dictionary<T, double>();
+            var probabilities = new Dictionary<T, double>();
             int count = 0;
             foreach (var item in data)
             {
-                mProbabilities[item]++;
+                if (probabilities.ContainsKey(item))
+                    probabilities[item]++;
+                else
+                    probabilities[item] = 1;
                 count++;
             }
-            foreach (var key in mProbabilities.Keys)
+            foreach (var key in probabilities.Keys.ToArray())
             {
-                mProbabilities[key] /= count;
+                probabilities[key] /= count;
             }
-            double totalProbability = mProbabilities.Values.Sum();
+
+            double totalProbability = probabilities.Values.Sum();
             if (totalProbability - 1 > 1e-10) throw new ArithmeticException($"Total probability must be equal to 1, but was {totalProbability}.");
+
+            return probabilities;
         }
 
         public double ValueProbability(T value)
