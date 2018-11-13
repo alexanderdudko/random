@@ -7,6 +7,7 @@ using Generator.Sequence;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 
 namespace GeneratorCLI
@@ -22,12 +23,12 @@ namespace GeneratorCLI
             mLogFilePath = Path.Combine(path, "log.txt");
 
             int fileSize = 1024 * 1024; // 1MB
-            int numberOfFiles = 200;
+            int numberOfFiles = 16;
 
-            GenerateFiles(path, fileSize, numberOfFiles);
+            GenerateFiles(path, fileSize, numberOfFiles, "exp1_");
         }
 
-        private static void GenerateFiles(string path, int fileSize, int numberOfFiles)
+        private static void GenerateFiles(string path, int fileSize, int numberOfFiles, string fileNamePrefix = "")
         {
             var logFile = new LogFile<RandomFilesLogRecord>(Path.Combine(path, "FilesInfo.txt"), new RandomFilesLogRecordSerializer());
             var logRecords = new List<RandomFilesLogRecord>();
@@ -42,23 +43,39 @@ namespace GeneratorCLI
                 double progression = Math.Pow(k, 1.0 / (n - 1));
                 distribution.SetProgressionRate(progression);
 
-                string filename = $"{nameGenerator.GetUniqueString()}.data";
+                string filename = $"{fileNamePrefix}{nameGenerator.GetUniqueString()}.data";
                 LogMessage($"Generating file [{i + 1}/{numberOfFiles}]: Filename {filename}.");
                 byte[] data = GenerateData(distribution, fileSize);
+                byte[] compressedData = Compress(data);
+
+                double compressionRatio = (double)compressedData.Length / data.Length;
+                LogMessage($"  Compression ratio: {compressionRatio}");
                 File.WriteAllBytes(Path.Combine(path, filename), data);
                 var logRecord = new RandomFilesLogRecord()
                 {
                     FileName = filename,
                     ProgressionRate = progression,
                     GeneratorEntropy = EntropyCalculator.CalculateForDistribution(distribution),
-                    DataEntropy = EntropyCalculator.CalculateForData(data)
+                    DataEntropy = EntropyCalculator.CalculateForData(data),
+                    CompressionRatio = compressionRatio,
+                    CompressedDataEntropy = EntropyCalculator.CalculateForData(compressedData)
                 };
                 logRecords.Add(logRecord);
 
                 k *= 2;
             }
 
-            logFile.WriteAllRecords(logRecords);
+            logFile.WriteAllRecords(logRecords, new string[] { RandomFilesLogRecordSerializer.GetHeadersComment() });
+        }
+
+        private static byte[] Compress(byte[] data)
+        {
+            using (var ms = new MemoryStream())
+            using (var zip = new GZipStream(ms, CompressionLevel.Optimal))
+            {
+                zip.Write(data);
+                return ms.ToArray();
+            }
         }
 
         private static byte[] GenerateData(IDiscreteValueDistribution<byte> distribution, int size, double entropyDiff = 0.001)

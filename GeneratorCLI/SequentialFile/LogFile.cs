@@ -8,6 +8,8 @@ namespace GeneratorCLI
 {
     class LogFile<TRecord>
     {
+        private const string COMMENT_PREFIX = "#";
+
         private string mPath;
         private ILogFileRecordSerializer<TRecord> mSerializer;
 
@@ -17,14 +19,18 @@ namespace GeneratorCLI
             mSerializer = serializer;
         }
 
-        public void WriteAllRecords(IEnumerable<TRecord> records)
+        public void WriteAllRecords(IEnumerable<TRecord> records, IEnumerable<string> comments = null)
         {
-            File.WriteAllLines(mPath, records.Select(r => mSerializer.Serialize(r)));
+            var fileData = records.Select(r => mSerializer.Serialize(r));
+            if (comments != null)
+                fileData = comments.Select(c => COMMENT_PREFIX + " " + c).Union(fileData);
+            File.WriteAllLines(mPath, fileData);
         }
 
         public IEnumerable<TRecord> ReadAllRecords()
         {
-            return File.ReadAllLines(mPath).Select(t => mSerializer.Deserialize(t));
+            var fileData = File.ReadAllLines(mPath);
+            return fileData.Where(t => !t.StartsWith(COMMENT_PREFIX)).Select(t => mSerializer.Deserialize(t));
         }
     }
 
