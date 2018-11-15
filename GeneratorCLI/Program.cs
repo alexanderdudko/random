@@ -87,7 +87,7 @@ namespace GeneratorCLI
             //var uniformRandomSource = new SystemUniformRandomSource();
             //var uniformRandomSource = new CryptoUniformRandomSource();
             //var uniformRandomSource = new WebRandomSource(new RandomOrgAccessDetails());
-            var uniformRandomSource = new WebRandomSource(new QuantumRngAnuEduAccessDetails());
+            var uniformRandomSource = new WebRandomSource(new LargeDataQuantumRngAnuEduAccessDetails());
             var randomSource = new DiscreteFiniteSetValueGenerator<byte>(distribution, uniformRandomSource);
             var sg = new SequenceGenerator<byte>(randomSource);
             byte[] bytes;

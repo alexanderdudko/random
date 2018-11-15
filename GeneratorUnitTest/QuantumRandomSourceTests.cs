@@ -29,7 +29,18 @@ namespace GeneratorUnitTest
 
             double entropy = EntropyCalculator.CalculateForData(bytes);
 
-            Assert.Equal(8, entropy, 1);
+            Assert.Equal(8, entropy, 2);
+        }
+
+        [Fact]
+        public void QuantumSourceLargeDataDistributionIsUniformTest()
+        {
+            var uniformRandomSource = new WebRandomSource(new LargeDataQuantumRngAnuEduAccessDetails());
+            byte[] bytes = uniformRandomSource.GetBytesSource().Take(1024 * 1024).ToArray();
+
+            double entropy = EntropyCalculator.CalculateForData(bytes);
+
+            Assert.Equal(8, entropy, 3);
         }
     }
 }
