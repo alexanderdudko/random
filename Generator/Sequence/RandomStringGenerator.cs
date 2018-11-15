@@ -5,7 +5,7 @@ using System.Text;
 using Generator.Distribution;
 using Generator.RandomGenerator;
 using Generator.RandomGenerator.Discrete;
-using Generator.RandomGenerator.Uniform;
+using Generator.RandomGenerator.Continuous;
 
 namespace Generator.Sequence
 {

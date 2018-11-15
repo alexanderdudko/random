@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Security.Cryptography;
 
-namespace Generator.RandomGenerator.Uniform
+namespace Generator.RandomGenerator.Continuous
 {
     public class CryptoUniformRandomSource : IUniformDistributionGenerator
     {

@@ -1,5 +1,5 @@
 ﻿using Generator.Distribution;
-using Generator.RandomGenerator.Uniform;
+using Generator.RandomGenerator.Continuous;
 using System;
 using System.Collections.Generic;
 using System.Text;

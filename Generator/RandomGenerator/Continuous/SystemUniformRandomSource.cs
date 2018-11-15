@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Generator.RandomGenerator.Uniform
+namespace Generator.RandomGenerator.Continuous
 {
     public class SystemUniformRandomSource : IUniformDistributionGenerator
     {

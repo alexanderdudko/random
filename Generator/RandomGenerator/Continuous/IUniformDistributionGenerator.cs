@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Generator.RandomGenerator.Uniform
+namespace Generator.RandomGenerator.Continuous
 {
     public interface IUniformDistributionGenerator : IDistributionGenerator<double>
     {

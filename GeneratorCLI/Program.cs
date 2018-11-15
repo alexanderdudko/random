@@ -2,7 +2,8 @@
 using Generator.Distribution;
 using Generator.Distribution.Entropy;
 using Generator.RandomGenerator.Discrete;
-using Generator.RandomGenerator.Uniform;
+using Generator.RandomGenerator.Continuous;
+using Generator.ResourceAccess;
 using Generator.Sequence;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace GeneratorCLI
             mLogFilePath = Path.Combine(path, "log.txt");
 
             int fileSize = 1024 * 1024; // 1MB
-            int numberOfFiles = 16;
+            int numberOfFiles = 200;
 
             GenerateFiles(path, fileSize, numberOfFiles, "exp1_");
         }
@@ -84,7 +85,9 @@ namespace GeneratorCLI
             LogMessage($"  Generator entropy {generatorEntropy:N5}");
 
             //var uniformRandomSource = new SystemUniformRandomSource();
-            var uniformRandomSource = new CryptoUniformRandomSource();
+            //var uniformRandomSource = new CryptoUniformRandomSource();
+            //var uniformRandomSource = new WebRandomSource(new RandomOrgAccessDetails());
+            var uniformRandomSource = new WebRandomSource(new QuantumRngAnuEduAccessDetails());
             var randomSource = new DiscreteFiniteSetValueGenerator<byte>(distribution, uniformRandomSource);
             var sg = new SequenceGenerator<byte>(randomSource);
             byte[] bytes;
