@@ -6,7 +6,17 @@ namespace Generator.RandomGenerator.Continuous
 {
     public class SystemUniformRandomSource : IUniformDistributionGenerator
     {
-        private Random mRandom = new Random();
+        private Random mRandom;
+
+        public SystemUniformRandomSource()
+        {
+            mRandom = new Random();
+        }
+
+        public SystemUniformRandomSource(int seed)
+        {
+            mRandom = new Random(seed);
+        }
 
         public double Next()
         {
