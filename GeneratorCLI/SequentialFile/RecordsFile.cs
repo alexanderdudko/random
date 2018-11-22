@@ -6,14 +6,14 @@ using System.Text;
 
 namespace GeneratorCLI
 {
-    class LogFile<TRecord>
+    class RecordsFile<TRecord>
     {
         private const string COMMENT_PREFIX = "#";
 
         private string mPath;
         private ILogFileRecordSerializer<TRecord> mSerializer;
 
-        public LogFile(string path, ILogFileRecordSerializer<TRecord> serializer)
+        public RecordsFile(string path, ILogFileRecordSerializer<TRecord> serializer)
         {
             mPath = path;
             mSerializer = serializer;

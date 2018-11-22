@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace GeneratorCLI
+namespace GeneratorCLI.Tasks.Generate
 {
-    class RandomFilesLogRecord
+    class GenerateFileRecord
     {
         public string FileName { get; set; }
         public double ProgressionRate { get; set; }
@@ -14,14 +14,14 @@ namespace GeneratorCLI
         public double CompressedDataEntropy { get; set; }
     }
 
-    class RandomFilesLogRecordSerializer : ILogFileRecordSerializer<RandomFilesLogRecord>
+    class RandomFilesLogRecordSerializer : ILogFileRecordSerializer<GenerateFileRecord>
     {
         private const char SEPARATOR = '\t';
 
-        public RandomFilesLogRecord Deserialize(string text)
+        public GenerateFileRecord Deserialize(string text)
         {
             var parts = text.Split(SEPARATOR);
-            return new RandomFilesLogRecord()
+            return new GenerateFileRecord()
             {
                 FileName = parts[0],
                 ProgressionRate = double.Parse(parts[1]),
@@ -32,7 +32,7 @@ namespace GeneratorCLI
             };
         }
 
-        public string Serialize(RandomFilesLogRecord record)
+        public string Serialize(GenerateFileRecord record)
         {
             return string.Join(SEPARATOR,
                 record.FileName,

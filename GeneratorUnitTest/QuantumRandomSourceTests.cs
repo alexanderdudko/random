@@ -3,7 +3,10 @@ using Generator.RandomGenerator.Continuous;
 using Generator.ResourceAccess;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using Xunit;
 
@@ -29,7 +32,7 @@ namespace GeneratorUnitTest
 
             double entropy = EntropyCalculator.CalculateForData(bytes);
 
-            Assert.Equal(8, entropy, 2);
+            Assert.Equal(8, entropy, 1);
         }
 
         [Fact]
@@ -42,5 +45,6 @@ namespace GeneratorUnitTest
 
             Assert.Equal(8, entropy, 3);
         }
+
     }
 }

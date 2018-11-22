@@ -1,7 +1,6 @@
 ﻿using Generator.ResourceAccess;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -27,7 +26,7 @@ namespace Generator.RandomGenerator.Continuous
                 return mBytesSource;
             }
         }
-        internal IEnumerable<byte> GetBytesSource()
+        public IEnumerable<byte> GetBytesSource()
         {
             while (true)
             {
