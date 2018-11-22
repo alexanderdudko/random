@@ -7,9 +7,9 @@ namespace Generator.Sequence
 {
     public class SequenceGenerator<T> : ISequenceGenerator<T>
     {
-        private IRandomSource<T> mSource;
+        private IRandomGenerator<T> mSource;
 
-        public SequenceGenerator(IRandomSource<T> source)
+        public SequenceGenerator(IRandomGenerator<T> source)
         {
             mSource = source;
         }

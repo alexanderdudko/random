@@ -2,7 +2,7 @@
 
 namespace Generator.RandomGenerator.Continuous
 {
-    public interface IUniformDistributionGenerator : IDistributionGenerator<double>
+    public interface IUniformDistributionGenerator : IRandomGenerator<double>
     {
     }
 }

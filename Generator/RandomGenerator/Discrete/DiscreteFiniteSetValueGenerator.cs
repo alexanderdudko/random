@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Generator.RandomGenerator.Discrete
 {
-    public class DiscreteFiniteSetValueGenerator<T> : IDistributionGenerator<T>
+    public class DiscreteFiniteSetValueGenerator<T> : IRandomGenerator<T>
     {
         private IDiscreteValueDistribution<T> mDistribution;
         private IUniformDistributionGenerator mUniformDistributionGenerator;

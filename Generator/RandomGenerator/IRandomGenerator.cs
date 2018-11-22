@@ -4,8 +4,8 @@ using System.Text;
 
 namespace Generator.RandomGenerator
 {
-    public interface IDistributionGenerator<T> : IRandomSource<T>
+    public interface IRandomGenerator<T>
     {
-
+        T Next();
     }
 }
