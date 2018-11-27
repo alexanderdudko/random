@@ -8,17 +8,23 @@ namespace Generator.Distribution
     public class GeometricProgressionDistribution<T> : IDiscreteValueDistribution<T>
     {
         private T[] mValues;
+        private double mProgressionRate = 0;
         private Dictionary<T, double> mProbabilities;
         public IEnumerable<T> Values => mValues;
 
         public GeometricProgressionDistribution(IEnumerable<T> values, double progressionRate)
         {
+            if (progressionRate <= 0) throw new ArgumentOutOfRangeException("Progression rate must be greater than zero.");
+
             mValues = values.ToArray();
             SetProgressionRate(progressionRate);
         }
 
         public void SetProgressionRate(double progressionRate)
         {
+            if (progressionRate == mProgressionRate) return;
+
+            mProgressionRate = progressionRate;
             mProbabilities = new Dictionary<T, double>();
             double sum = 1;
             double x = 1;

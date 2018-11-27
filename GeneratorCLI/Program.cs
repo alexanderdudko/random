@@ -26,6 +26,16 @@ namespace GeneratorCLI
                         fileNamePrefix: "exp1_"
                     );
                     break;
+                case TasksEnum.GenerateMarkovEntropyFiles:
+                    GenerateMarkovEntropyFilesTask.GenerateFiles(
+                        path: Directory.CreateDirectory(Path.Combine(basePath, DateTime.Now.ToString("yyyyMMdd-HHmmss"))).FullName,
+                        initSize: 32,
+                        totalSize: 1024 * 1024, // 1 MB
+                        numberOfDifferentDependanceDepth: 15,
+                        numberOfDifferentEntropyValues: 15,
+                        fileNamePrefix: "exp2_"
+                    );
+                    break;
                 case TasksEnum.MeasureFiles:
                     MeasureFilesTask.MeasureFilesInDirectory(
                         path: new DirectoryInfo(Path.Combine(basePath, @"20181113-104802 - Upload 1\result_files_copy\result_files")).FullName,

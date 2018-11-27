@@ -14,7 +14,7 @@ namespace GeneratorUnitTest
 {
     public class QuantumRandomSourceTests
     {
-        [Fact]
+        [Fact(Skip = "Access to web service")]
         public void QuantumSourceAccessibleTest()
         {
             int retrieveBytesCount = 10;
@@ -24,7 +24,7 @@ namespace GeneratorUnitTest
             Assert.Equal(retrieveBytesCount, bytes.Length);
         }
 
-        [Fact]
+        [Fact(Skip = "Access to web service")]
         public void QuantumSourceDistributionIsUniformTest()
         {
             var uniformRandomSource = new WebRandomSource(new QuantumRngAnuEduAccessDetails());
@@ -35,7 +35,7 @@ namespace GeneratorUnitTest
             Assert.Equal(8, entropy, 1);
         }
 
-        [Fact]
+        [Fact(Skip = "Access to web service")]
         public void QuantumSourceLargeDataDistributionIsUniformTest()
         {
             var uniformRandomSource = new WebRandomSource(new LargeDataQuantumRngAnuEduAccessDetails());

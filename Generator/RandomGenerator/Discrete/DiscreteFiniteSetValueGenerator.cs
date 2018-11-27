@@ -11,6 +11,10 @@ namespace Generator.RandomGenerator.Discrete
         private IDiscreteValueDistribution<T> mDistribution;
         private IUniformDistributionGenerator mUniformDistributionGenerator;
 
+        private double mCumulativeEntropy = 0;
+        private int mValuesCount = 0;
+        public double TotalGeneratedEntropy => mValuesCount > 0 ? mCumulativeEntropy / mValuesCount : 0;
+
         public DiscreteFiniteSetValueGenerator(IDiscreteValueDistribution<T> distribution, IUniformDistributionGenerator uniformDistributionGenerator)
         {
             mDistribution = distribution;
@@ -19,16 +23,26 @@ namespace Generator.RandomGenerator.Discrete
 
         public T Next()
         {
-            double p = mUniformDistributionGenerator.Next();
+            double x = mUniformDistributionGenerator.Next();
             double cumulativeP = 0;
-            foreach (var item in mDistribution.Values)
+            foreach (var valueItem in mDistribution.Values)
             {
-                double valueP = mDistribution.ValueProbability(item);
-                cumulativeP += valueP;
-                if (cumulativeP > p)
-                    return item;
+                double valueItemProbability = mDistribution.ValueProbability(valueItem);
+                cumulativeP += valueItemProbability;
+                if (cumulativeP > x)
+                {
+                    mValuesCount++;
+                    mCumulativeEntropy += -Math.Log(valueItemProbability, 2);
+                    return valueItem;
+                }
             }
-            throw new ArithmeticException($"Cumulative probability reached value {cumulativeP}, but that not enough to be greater than uniform random value equal to {p}.");
+            throw new ArithmeticException($"Cumulative probability reached value {cumulativeP}, but that not enough to be greater than uniform random value equal to {x}.");
+        }
+
+        public void ClearTotalEntropy()
+        {
+            mCumulativeEntropy = 0;
+            mValuesCount = 0;
         }
     }
 }
