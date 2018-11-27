@@ -90,11 +90,11 @@ namespace GeneratorCLIUnitTest
         }
 
         [Fact]
-        public void GenerateDataWithDependenceGivesLowerEntropyTest()
+        public void GenerateDataWithDependenceGivesSimilarEntropyTest()
         {
             int N = 100000;
             double progressionRate = 1.1;
-            int dependanceDepth = 10;
+            int dependanceDepth = 1;
 
             var chainGenerator1 = new ChainGenerator();
             byte[] dataWithoutDependance = chainGenerator1.GenerateData(progressionRate, 0, N, 0);
@@ -104,7 +104,44 @@ namespace GeneratorCLIUnitTest
             byte[] dataWithDependance = chainGenerator2.GenerateData(progressionRate, dependanceDepth, N, dependanceDepth);
             double dataWithDependanceEntropy = chainGenerator2.TotalGeneratedEntropy;
 
-            Assert.InRange(dataWithDependanceEntropy, 0, dataWithoutDependanceEntropy);
+            Assert.Equal(dataWithDependanceEntropy, dataWithoutDependanceEntropy, 1);
+        }
+
+        [Fact]
+        public void GeneratorEntropyForDataWithDependenceIsLowerThanEmpiricalEntropyTest()
+        {
+            int N = 10000;
+            double progressionRate = 1.1;
+            int dependanceDepth = 1;
+
+            var chainGenerator = new ChainGenerator();
+            byte[] dataWithDependance = chainGenerator.GenerateData(progressionRate, dependanceDepth, N, dependanceDepth);
+            double dataWithDependanceEntropy = chainGenerator.TotalGeneratedEntropy;
+            double empiricalEntropy = EntropyCalculator.CalculateForData(dataWithDependance);
+
+            Assert.InRange(dataWithDependanceEntropy, 0, empiricalEntropy);
+        }
+
+        [Fact]
+        public void EmpiricalEntropyForDataWithOneByteDependenceIsLowerForTwoByteStepTest()
+        {
+            int N = 10000;
+            double progressionRate = 1.1;
+            int dependanceDepth = 1;
+
+            var chainGenerator = new ChainGenerator();
+            byte[] dataWithDependance = chainGenerator.GenerateData(progressionRate, dependanceDepth, N, dependanceDepth);
+            double dataWithDependanceEntropy = chainGenerator.TotalGeneratedEntropy;
+            double empiricalEntropy = EntropyCalculator.CalculateForData(dataWithDependance);
+
+            int[] twoByteData = new int[N / 2];
+            for (int i = 0; i < N / 2; i++)
+                twoByteData[i] = dataWithDependance[i * 2] * 256 + dataWithDependance[i * 2 + 1];
+
+            double twoByteEntropy = EntropyCalculator.CalculateForData(twoByteData);
+            double twoByteEntropyPerByte = twoByteEntropy / 2;
+
+            Assert.InRange(twoByteEntropyPerByte, 0, empiricalEntropy);
         }
     }
 }
