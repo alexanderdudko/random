@@ -15,48 +15,51 @@ namespace GeneratorCLI.Tasks.Generate
             Log.LogFilePath = Path.Combine(path, "GenerateLog.txt");
 
 
-            var logFile = new RecordsFile<GenerateFileRecord>(Path.Combine(path, "FilesInfo.txt"), new RandomFilesLogRecordSerializer());
-            var logRecords = new List<GenerateFileRecord>();
+            var logFile = new RecordsFile<GenerateMarkovChainFileRecord>(Path.Combine(path, "FilesInfo.txt"), new GenerateMarkovChainFileRecordSerializer());
+            var logRecords = new List<GenerateMarkovChainFileRecord>();
 
             var nameGenerator = new UniqueRandomStringGenerator(4);
 
             var chainGenerator = new ChainGenerator();
 
-            for (int i = 0; i < numberOfDifferentEntropyValues; i++)
+            int totalItems = numberOfDifferentDependanceDepth * numberOfDifferentEntropyValues;
+            int currentItemNumber = 0;
+            for (int j = 0; j < numberOfDifferentDependanceDepth; j++)
             {
-                double progression = Math.Pow(2, Math.Pow((double)i / numberOfDifferentEntropyValues, 2));
-
-                for (int j = 0; j < numberOfDifferentDependanceDepth; j++)
+                int dependanceDepth = j;
+                for (int i = 0; i < numberOfDifferentEntropyValues; i++)
                 {
-                    int dependanceDepth = j;
+                    currentItemNumber++;
+
+                    double progression = Math.Pow(2, Math.Pow((double)i / numberOfDifferentEntropyValues, 2));
 
                     string filename = $"{fileNamePrefix}{nameGenerator.GetUniqueString()}.data";
-                    Log.LogMessage($"Generating file [{i + 1}/{numberOfDifferentEntropyValues}]: Filename {filename}.");
+                    Log.LogMessage($"Generating file [{currentItemNumber}/{totalItems}]: Filename {filename}, DependanceDepth {dependanceDepth}, Progression {progression:N4}.");
 
                     byte[] data = chainGenerator.GenerateData(progression, initSize, totalSize, dependanceDepth);
                     byte[] compressedData = Zip.Compress(data);
 
                     double compressionRatio = (double)compressedData.Length / data.Length;
+                    Log.LogMessage($"  Generated data entropy: {chainGenerator.TotalGeneratedEntropy}");
                     Log.LogMessage($"  Compression ratio: {compressionRatio}");
 
-                    File.WriteAllBytes(Path.Combine(path, filename), data);
+                    //File.WriteAllBytes(Path.Combine(path, filename), data);
 
-                    var logRecord = new GenerateFileRecord()
+                    var logRecord = new GenerateMarkovChainFileRecord()
                     {
                         FileName = filename,
+                        DependanceDepth = dependanceDepth,
                         ProgressionRate = progression,
                         GeneratorEntropy = chainGenerator.TotalGeneratedEntropy,
                         DataEntropy = EntropyCalculator.CalculateForData(data),
-                        CompressionRatio = compressionRatio,
-                        CompressedDataEntropy = EntropyCalculator.CalculateForData(compressedData)
+                        CompressionRatio = compressionRatio
                     };
                     logRecords.Add(logRecord);
                 }
             }
 
-            logFile.WriteAllRecords(logRecords, new string[] { RandomFilesLogRecordSerializer.GetHeadersComment() });
+            logFile.WriteAllRecords(logRecords, new string[] { GenerateMarkovChainFileRecordSerializer.GetHeadersComment() });
         }
-
     }
 
 }

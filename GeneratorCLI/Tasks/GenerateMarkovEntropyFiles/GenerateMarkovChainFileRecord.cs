@@ -4,43 +4,43 @@ using System.Text;
 
 namespace GeneratorCLI.Tasks.Generate
 {
-    class GenerateFileRecord
+    class GenerateMarkovChainFileRecord
     {
         public string FileName { get; set; }
+        public int DependanceDepth { get; set; }
         public double ProgressionRate { get; set; }
         public double GeneratorEntropy { get; set; }
         public double DataEntropy { get; set; }
         public double CompressionRatio { get; set; }
-        public double CompressedDataEntropy { get; set; }
     }
 
-    class GenerateFileRecordSerializer : ILogFileRecordSerializer<GenerateFileRecord>
+    class GenerateMarkovChainFileRecordSerializer : ILogFileRecordSerializer<GenerateMarkovChainFileRecord>
     {
         private const char SEPARATOR = '\t';
 
-        public GenerateFileRecord Deserialize(string text)
+        public GenerateMarkovChainFileRecord Deserialize(string text)
         {
             var parts = text.Split(SEPARATOR);
-            return new GenerateFileRecord()
+            return new GenerateMarkovChainFileRecord()
             {
                 FileName = parts[0],
-                ProgressionRate = double.Parse(parts[1]),
-                GeneratorEntropy = double.Parse(parts[2]),
-                DataEntropy = double.Parse(parts[3]),
-                CompressionRatio = double.Parse(parts[4]),
-                CompressedDataEntropy = double.Parse(parts[5])
+                DependanceDepth = int.Parse(parts[1]),
+                ProgressionRate = double.Parse(parts[2]),
+                GeneratorEntropy = double.Parse(parts[3]),
+                DataEntropy = double.Parse(parts[4]),
+                CompressionRatio = double.Parse(parts[5]),
             };
         }
 
-        public string Serialize(GenerateFileRecord record)
+        public string Serialize(GenerateMarkovChainFileRecord record)
         {
             return string.Join(SEPARATOR,
                 record.FileName,
+                record.DependanceDepth,
                 record.ProgressionRate,
                 record.GeneratorEntropy,
                 record.DataEntropy,
-                record.CompressionRatio,
-                record.CompressedDataEntropy
+                record.CompressionRatio
             );
         }
 
@@ -49,11 +49,11 @@ namespace GeneratorCLI.Tasks.Generate
             return new string[] 
             {
                 "FileName",
+                "DependanceDepth",
                 "ProgressionRate",
                 "GeneratorEntropy",
                 "DataEntropy",
-                "CompressionRatio",
-                "CompressedDataEntropy"
+                "CompressionRatio"
             };
         }
 

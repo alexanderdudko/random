@@ -20,7 +20,7 @@ namespace GeneratorCLI.Tasks.Generate
             Log.LogFilePath = Path.Combine(path, "GenerateLog.txt");
 
 
-            var logFile = new RecordsFile<GenerateFileRecord>(Path.Combine(path, "FilesInfo.txt"), new RandomFilesLogRecordSerializer());
+            var logFile = new RecordsFile<GenerateFileRecord>(Path.Combine(path, "FilesInfo.txt"), new GenerateFileRecordSerializer());
             var logRecords = new List<GenerateFileRecord>();
 
             var nameGenerator = new UniqueRandomStringGenerator(4);
@@ -55,7 +55,7 @@ namespace GeneratorCLI.Tasks.Generate
                 logRecords.Add(logRecord);
             }
 
-            logFile.WriteAllRecords(logRecords, new string[] { RandomFilesLogRecordSerializer.GetHeadersComment() });
+            logFile.WriteAllRecords(logRecords, new string[] { GenerateFileRecordSerializer.GetHeadersComment() });
         }
 
         private static byte[] GenerateData(IDiscreteValueDistribution<byte> distribution, int size, double entropyDiff = 0.001)
