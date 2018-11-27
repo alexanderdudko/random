@@ -15,6 +15,8 @@ namespace GeneratorCLI.Tasks.Generate
     internal class ChainGenerator
     {
         private IUniformDistributionGenerator mUniformRandomSource;
+        private double mInitSequenceEntropy = 0;
+        private double mChainSequenceEntropy = 0;
         public double TotalGeneratedEntropy { get; private set; } = 0;
 
         private HashAlgorithm mHash;
@@ -40,14 +42,15 @@ namespace GeneratorCLI.Tasks.Generate
 
             byte[] result = new byte[totalSize];
 
-            TotalGeneratedEntropy = 0;
-
             // Generating init sequence
             byte[] initSequence = GenerateInitSequence(progression, initSize);
             initSequence.CopyTo(result, 0);
 
             // Generating markov chain
-            GenerateChain(result, progression, initSize, totalSize - initSize, dependanceDepth);
+            int chainSize = totalSize - initSize;
+            GenerateChain(result, progression, initSize, chainSize, dependanceDepth);
+
+            TotalGeneratedEntropy = ((mInitSequenceEntropy * initSize) + (mChainSequenceEntropy * chainSize)) / totalSize;
 
             return result;
         }
@@ -61,7 +64,7 @@ namespace GeneratorCLI.Tasks.Generate
             var sg = new SequenceGenerator<byte>(randomSource);
             byte[] bytes = sg.Generate(initSize).ToArray();
 
-            TotalGeneratedEntropy += randomSource.TotalGeneratedEntropy;
+            mInitSequenceEntropy = randomSource.TotalGeneratedEntropy;
 
             return bytes;
         }
@@ -80,7 +83,7 @@ namespace GeneratorCLI.Tasks.Generate
                 data[startPosition + i] = GenerateNextItem(dependanceData, randomSource);
             }
 
-            TotalGeneratedEntropy += randomSource.TotalGeneratedEntropy;
+            mChainSequenceEntropy = randomSource.TotalGeneratedEntropy;
         }
 
         internal byte GenerateNextItem(byte[] initSequence, IRandomGenerator<int> randomSource)
