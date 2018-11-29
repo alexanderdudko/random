@@ -1,10 +1,13 @@
-﻿using Generator.Distribution.Entropy;
+﻿using Generator.Distribution;
+using Generator.Distribution.Entropy;
 using Generator.Sequence;
 using GeneratorCLI.Compression;
 using GeneratorCLI.Logger;
+using GeneratorCLI.Search;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace GeneratorCLI.Tasks.Generate
 {
@@ -22,6 +25,18 @@ namespace GeneratorCLI.Tasks.Generate
 
             var chainGenerator = new ChainGenerator();
 
+            Log.LogMessage($"Calculating progression values");
+            double[] progressionRates = new double[numberOfDifferentEntropyValues];
+            double[] entropyValues = new double[numberOfDifferentEntropyValues];
+            for (int i = 0; i < numberOfDifferentEntropyValues; i++)
+            {
+                double targetEntropy = 8 * (1 - (double)i / (numberOfDifferentEntropyValues - 1));
+                progressionRates[i] = ParameterSearch.SearchParameterValue(CalculateEntropyForProgression, targetEntropy, 1, 1000000, 0.001);
+                //progressionRates[i] = Math.Pow(2, i);
+                entropyValues[i] = CalculateEntropyForProgression(progressionRates[i]);
+                Log.LogMessage($"  Progression rate {progressionRates[i]} gives entropy {entropyValues[i]}");
+            }
+            
             int totalItems = numberOfDifferentDependanceDepth * numberOfDifferentEntropyValues;
             int currentItemNumber = 0;
             for (int j = 0; j < numberOfDifferentDependanceDepth; j++)
@@ -31,7 +46,7 @@ namespace GeneratorCLI.Tasks.Generate
                 {
                     currentItemNumber++;
 
-                    double progression = Math.Pow(2, Math.Pow((double)i / numberOfDifferentEntropyValues, 2));
+                    double progression = progressionRates[i]; // Math.Pow(2, Math.Pow((double)i / numberOfDifferentEntropyValues, 2));
 
                     string filename = $"{fileNamePrefix}{nameGenerator.GetUniqueString()}.data";
                     Log.LogMessage($"Generating file [{currentItemNumber}/{totalItems}]: Filename {filename}, DependanceDepth {dependanceDepth}, Progression {progression:N4}.");
@@ -59,6 +74,14 @@ namespace GeneratorCLI.Tasks.Generate
             }
 
             logFile.WriteAllRecords(logRecords, new string[] { GenerateMarkovChainFileRecordSerializer.GetHeadersComment() });
+        }
+
+        private static GeometricProgressionDistribution<int> mProgressionDistribution = new GeometricProgressionDistribution<int>(Enumerable.Range(0, 256), 1);
+
+        private static double CalculateEntropyForProgression(double progression)
+        {
+            mProgressionDistribution.SetProgressionRate(progression);
+            return EntropyCalculator.CalculateForDistribution(mProgressionDistribution);
         }
     }
 
