@@ -8,7 +8,15 @@ namespace GeneratorCLI.Search
     {
         public static double SearchParameterValue(Func<double, double> f, double targetY, double minX, double maxX, double precisionY, int maxStepsCount = 1000)
         {
-            bool increasing = f(maxX) > f(minX);
+            double fmaxX = f(maxX);
+            double fminX = f(minX);
+            bool increasing = fmaxX > fminX;
+
+            // Check if target is outside of bounds
+            if (increasing && targetY <= fminX || !increasing && targetY >= fminX)
+                return minX;
+            else if (increasing && targetY >= fmaxX || !increasing && targetY <= fmaxX)
+                return maxX;
 
             int stepsCount = 0;
             double currentX = minX;

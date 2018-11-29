@@ -35,7 +35,7 @@ namespace GeneratorCLIUnitTest
         }
 
         [Fact]
-        public void SearchTargetOutsideBoudariesTest()
+        public void SearchTargetOutsideBoudariesBelowTest()
         {
             Func<double, double> f = x => 5 * x + 9;
             double searchTargetY = 15;
@@ -44,7 +44,20 @@ namespace GeneratorCLIUnitTest
 
             double searchResult = ParameterSearch.SearchParameterValue(f, searchTargetY, minX, maxX, 0.001);
 
-            Assert.Equal(minX, searchResult, 3);
+            Assert.Equal(minX, searchResult);
+        }
+
+        [Fact]
+        public void SearchTargetOutsideBoudariesAboveTest()
+        {
+            Func<double, double> f = x => 5 * x + 9;
+            double searchTargetY = 15;
+            double minX = -10;
+            double maxX = 0;
+
+            double searchResult = ParameterSearch.SearchParameterValue(f, searchTargetY, minX, maxX, 0.001);
+
+            Assert.Equal(maxX, searchResult);
         }
     }
 }
