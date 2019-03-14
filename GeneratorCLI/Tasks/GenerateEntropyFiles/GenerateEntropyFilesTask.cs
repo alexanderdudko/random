@@ -18,7 +18,7 @@ namespace GeneratorCLI.Tasks.Generate
         public static void GenerateFiles(string path, int fileSize, int numberOfFiles, string fileNamePrefix = "")
         {
             Log.LogFilePath = Path.Combine(path, "GenerateLog.txt");
-
+            Log.LogMessage($"Parameters: {{ fileSize = {fileSize}, numberOfFiles = {numberOfFiles}, prefix = \"{fileNamePrefix}\" }}");
 
             var logFile = new RecordsFile<GenerateFileRecord>(Path.Combine(path, "FilesInfo.txt"), new GenerateFileRecordSerializer());
             var logRecords = new List<GenerateFileRecord>();

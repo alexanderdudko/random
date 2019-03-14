@@ -16,7 +16,7 @@ namespace GeneratorCLI.Tasks.Generate
         public static void GenerateFiles(string path, int initSize, int totalSize, int numberOfDifferentDependanceDepth, int numberOfDifferentEntropyValues, string fileNamePrefix = "")
         {
             Log.LogFilePath = Path.Combine(path, "GenerateLog.txt");
-
+            Log.LogMessage($"Parameters: {{ initSize = {initSize}, totalSize = {totalSize}, dependanceDepth = {numberOfDifferentDependanceDepth}, entropyValues = {numberOfDifferentEntropyValues}, prefix = {fileNamePrefix} }}");
 
             var logFile = new RecordsFile<GenerateMarkovChainFileRecord>(Path.Combine(path, "FilesInfo.txt"), new GenerateMarkovChainFileRecordSerializer());
             var logRecords = new List<GenerateMarkovChainFileRecord>();
@@ -32,7 +32,7 @@ namespace GeneratorCLI.Tasks.Generate
             {
                 double targetEntropy = 8 * (1 - (double)i / (numberOfDifferentEntropyValues - 1));
                 progressionRates[i] = ParameterSearch.SearchParameterValue(CalculateEntropyForProgression, targetEntropy, 1, 1000000, 0.001);
-                //progressionRates[i] = Math.Pow(2, i);
+                //progressionRates[i] = Math.Pow(2, i); // Alternative way to set progression rates to pay more attention for lower values of entropy
                 entropyValues[i] = CalculateEntropyForProgression(progressionRates[i]);
                 Log.LogMessage($"  Progression rate {progressionRates[i]} gives entropy {entropyValues[i]}");
             }
@@ -58,7 +58,7 @@ namespace GeneratorCLI.Tasks.Generate
                     Log.LogMessage($"  Generated data entropy: {chainGenerator.TotalGeneratedEntropy}");
                     Log.LogMessage($"  Compression ratio: {compressionRatio}");
 
-                    //File.WriteAllBytes(Path.Combine(path, filename), data);
+                    File.WriteAllBytes(Path.Combine(path, filename), data);
 
                     var logRecord = new GenerateMarkovChainFileRecord()
                     {

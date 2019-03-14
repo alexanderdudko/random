@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using GeneratorCLI.Tasks;
@@ -12,40 +13,42 @@ namespace GeneratorCLI
 
         static void Main(string[] args)
         {
-            string basePath = @"H:\projects\data\random";
+            var argsDict = ParseArgs(args);
 
-            var task = TasksEnum.GenerateEntropyFiles; //TODO: Can be retrieved from arguments
+            string basePath = argsDict["path"];
+            var task = Enum.Parse(typeof(TasksEnum), argsDict["task"]);
+            Console.WriteLine($"TASK {task}");
 
             switch (task)
             {
                 case TasksEnum.GenerateEntropyFiles:
                     GenerateEntropyFilesTask.GenerateFiles(
                         path: Directory.CreateDirectory(Path.Combine(basePath, DateTime.Now.ToString("yyyyMMdd-HHmmss"))).FullName,
-                        fileSize: 1024 * 1024, // 1 MB
-                        numberOfFiles: 200,
-                        fileNamePrefix: "exp1_"
+                        fileSize: int.Parse(argsDict["fileSize"]),
+                        numberOfFiles: int.Parse(argsDict["numberOfFiles"]),
+                        fileNamePrefix: argsDict["prefix"]
                     );
                     break;
                 case TasksEnum.GenerateMarkovEntropyFiles:
                     GenerateMarkovEntropyFilesTask.GenerateFiles(
                         path: Directory.CreateDirectory(Path.Combine(basePath, DateTime.Now.ToString("yyyyMMdd-HHmmss"))).FullName,
-                        initSize: 32,
-                        totalSize: 1024 * 1024, // 1 MB
-                        numberOfDifferentDependanceDepth: 15,
-                        numberOfDifferentEntropyValues: 15,
-                        fileNamePrefix: "exp2_"
+                        initSize: int.Parse(argsDict["initSize"]),
+                        totalSize: int.Parse(argsDict["fileSize"]),
+                        numberOfDifferentDependanceDepth: int.Parse(argsDict["dependanceDepth"]),
+                        numberOfDifferentEntropyValues: int.Parse(argsDict["entropyValues"]),
+                        fileNamePrefix: argsDict["prefix"]
                     );
                     break;
                 case TasksEnum.MeasureFiles:
                     MeasureFilesTask.MeasureFilesInDirectory(
-                        path: new DirectoryInfo(Path.Combine(basePath, @"20181113-104802 - Upload 1\result_files_copy\result_files")).FullName,
-                        pattern: "*.zcaps"
+                        path: basePath,
+                        pattern: argsDict["pattern"]
                     );
                     break;
                 case TasksEnum.GenerateQuantumRandomFile:
                     GenerateQuantumRandomFilesTask.CreateQuantumRandomFileTest(
                         path: Directory.CreateDirectory(Path.Combine(basePath, DateTime.Now.ToString("yyyyMMdd-HHmmss"))).FullName,
-                        fileSize: 1024 * 1024 // 1 MB
+                        fileSize: int.Parse(argsDict["fileSize"])
                     );
                     break;
                 default:
@@ -55,7 +58,38 @@ namespace GeneratorCLI
             return;
         }
 
+        private static Dictionary<string, string> GetDefaults()
+        {
+            var result = new Dictionary<string, string>();
 
+            result["task"] = TasksEnum.GenerateEntropyFiles.ToString();
+            result["path"] = Environment.CurrentDirectory;
+            result["fileSize"] = (1024 * 1024).ToString(); // 1MB
+            result["numberOfFiles"] = 200.ToString();
+            result["prefix"] = "exp_";
+            result["initSize"] = 32.ToString();
+            result["pattern"] = "*.data";
+            result["dependanceDepth"] = 6.ToString();
+            result["entropyValues"] = (8 * 4 + 1).ToString();
+
+            return result;
+        }
+
+        private static Dictionary<string, string> ParseArgs(string[] args)
+        {
+            var result = GetDefaults();
+
+            foreach (var arg in args)
+            {
+                int index = arg.IndexOf('=');
+                if (index > 0)
+                    result[arg.Substring(0, index)] = arg.Substring(index + 1);
+                else
+                    result[arg.Substring(0, index)] = string.Empty;
+            }
+
+            return result;
+        }
     }
 
 }
