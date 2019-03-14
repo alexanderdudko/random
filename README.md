@@ -20,10 +20,14 @@ Application can perform one of the following tasks:
 
 ### Usage
 ```
-dotnet GeneratorCLI.dll task=<task_name> [<argument>=<value>, ...]
+dotnet GeneratorCLI.dll task=<task_name> [<argument1>=<value> <argument2>=<value> <argument3>=<value> ...]
 ```
 
-Example:
+Examples:
 ```
 dotnet GeneratorCLI.dll task=GenerateEntropyFiles fileSize=1024 numberOfFiles=5 prefix=exp1_
+```
+
+```
+dotnet GeneratorCLI.dll task=GenerateMarkovEntropyFiles dependanceDepth=5 entropyValues=50 prefix=exp2_
 ```
